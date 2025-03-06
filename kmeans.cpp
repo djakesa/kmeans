@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <chrono>
 
 using namespace cv;
 using namespace std;
@@ -63,7 +64,11 @@ int main(int argc, char** argv)
 
     // now we can call kmeans(...)
     Mat Labels, centers;
+    clock_t start1 = clock();
     kmeans( m, k, Labels, TermCriteria() , 5 ,KMEANS_RANDOM_CENTERS , centers  );
+    clock_t end1 = clock();
+    double elapsed1 = double(end1 - start1) / CLOCKS_PER_SEC; 
+    cout << "Temps d'exécution : " << elapsed1 << " secondes" << endl;
 
     //PRINT_MAT_INFO(Labels);
 
@@ -79,6 +84,7 @@ int main(int argc, char** argv)
     Labels = Labels.reshape(1, n.rows);
     Labels.convertTo(Labels, CV_8UC1);
     //PRINT_MAT_INFO(Labels);
+
 
     for (int i = 0; i < n.rows; ++i)
     {
@@ -99,6 +105,7 @@ int main(int argc, char** argv)
             }
         }
     }
+
 
     if (!groundTruthFilename.empty()) {
         Mat comparaison = imread(argv[3] , cv :: IMREAD_COLOR) ;
@@ -140,8 +147,8 @@ int main(int argc, char** argv)
         //cout << " VN: " << VN << endl;
         //cout << " FP " << FP << endl;
         //cout << " FN " << FN << endl;
-        //cout << " P: " << P << endl;
-        //cout << " S " << S << endl;
+        cout << " P: " << P << endl;
+        cout << " S " << S << endl;
         cout << " DSC " << DSC << endl;
     }
 
@@ -184,6 +191,7 @@ int main(int argc, char** argv)
     bool 	accumulate = false 
     )	
     */
+    clock_t start = clock();
     calcHist(&image, 1, &c, Mat(), hist, 1, &histSize, &histRange, true, false);
 
     // Assurer que hist est en format CV_32F
@@ -226,6 +234,8 @@ int main(int argc, char** argv)
     //PRINT_MAT_INFO(segmentedImage_mine);
     //compteur stop itération si jamais converge pas
     int compteur = 0;
+
+    
 
     while ((dtest1 > 1 || dtest2 > 1 ) && compteur < 30)
     {
@@ -312,6 +322,11 @@ int main(int argc, char** argv)
         dtest2 = norm(centre2 - centreold2);
         //cout<< " dtest2 : " << dtest2 << endl;
     }
+
+    clock_t end = clock();
+
+    double elapsed = double(end - start) / CLOCKS_PER_SEC; 
+    cout << "Temps d'exécution du mien: " << elapsed << " secondes" << endl;
 
     if (!groundTruthFilename.empty())
     {
